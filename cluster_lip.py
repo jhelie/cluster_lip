@@ -260,18 +260,18 @@ else:
 	#create folders
 	#--------------
 	os.mkdir(args.output_folder)
+	#1 sizes
 	os.mkdir(args.output_folder + "/1_sizes")
-	if args.cluster_groups_file!="no":
-		os.mkdir(args.output_folder + "/2_groups")
 	if args.xtcfilename!="no":
-		#1 sizes
 		os.mkdir(args.output_folder + "/1_sizes/1_1_plots_2D")
 		os.mkdir(args.output_folder + "/1_sizes/1_1_plots_2D/upper")
 		os.mkdir(args.output_folder + "/1_sizes/1_1_plots_2D/upper/png")
 		os.mkdir(args.output_folder + "/1_sizes/1_1_plots_2D/lower")
 		os.mkdir(args.output_folder + "/1_sizes/1_1_plots_2D/lower/png")
-		#2 groups
-		if args.cluster_groups_file!="no":
+	#2 groups
+	if args.cluster_groups_file!="no":
+		os.mkdir(args.output_folder + "/2_groups")
+		if args.xtcfilename!="no":
 			os.mkdir(args.output_folder + "/2_groups/2_1_plots_2D")
 			os.mkdir(args.output_folder + "/2_groups/2_1_plots_2D/upper")
 			os.mkdir(args.output_folder + "/2_groups/2_1_plots_2D/upper/png")
@@ -283,15 +283,16 @@ else:
 			if args.nb_smoothing>1:
 				os.mkdir(args.output_folder + "/2_groups/2_3_plots_1D_smoothed")
 				os.mkdir(args.output_folder + "/2_groups/2_3_plots_1D_smoothed/png")
-				os.mkdir(args.output_folder + "/2_groups/2_3_plots_1D_smoothed/xvg")
-		#3 snapshots
-		os.mkdir(args.output_folder + "/3_snapshots")
-		os.mkdir(args.output_folder + "/3_snapshots/sizes")
-		if args.cluster_groups_file!="no":
-			os.mkdir(args.output_folder + "/3_snapshots/groups")
-		#4 vmd
-		os.mkdir(args.output_folder + "/4_VMD")
-
+				os.mkdir(args.output_folder + "/2_groups/2_3_plots_1D_smoothed/xvg")	
+	#3 snapshots
+	os.mkdir(args.output_folder + "/3_snapshots")
+	os.mkdir(args.output_folder + "/3_snapshots/sizes")
+	if args.cluster_groups_file!="no":
+		os.mkdir(args.output_folder + "/3_snapshots/groups")	
+	#4 VMD
+	if args.xtcfilename!="no":
+		os.mkdir(args.output_folder + "/4_VMD")	
+	
 	#create log
 	#----------
 	filename_log=os.getcwd() + '/' + str(args.output_folder) + '/cluster_lip.log'
@@ -1299,10 +1300,16 @@ def write_frame_stat(f_index, t):
 		#sizes
 		#-----
 		#create file
-		if args.m_algorithm=='connectivity':
-			tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/1_sizes/1_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_sampled.stat'
+		if args.xtcfilename=="no":
+			if args.m_algorithm=='connectivity':
+				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/1_sizes/1_0_' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_sampled.stat'
+			else:
+				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/1_sizes/1_0_' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes_sampled.stat'
 		else:
-			tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/1_sizes/1_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes_sampled.stat'
+			if args.m_algorithm=='connectivity':
+				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/1_sizes/1_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_sampled.stat'
+			else:
+				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/1_sizes/1_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes_sampled.stat'
 		output_stat = open(tmp_name, 'w')
 		
 		#general info
@@ -1347,10 +1354,16 @@ def write_frame_stat(f_index, t):
 		#------
 		if args.cluster_groups_file!="no":
 			#create file
-			if args.m_algorithm=='connectivity':
-				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/2_groups/2_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_sampled.stat'
+			if args.xtcfilename=="no":
+				if args.m_algorithm=='connectivity':
+					tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/2_groups/2_0_' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_sampled.stat'
+				else:
+					tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/2_groups/2_0_' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups_sampled.stat'
 			else:
-				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/2_groups/2_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups_sampled.stat'
+				if args.m_algorithm=='connectivity':
+					tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/2_groups/2_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_sampled.stat'
+				else:
+					tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/2_groups/2_0_' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups_sampled.stat'
 			output_stat = open(tmp_name, 'w')
 		
 			#general info
@@ -1519,9 +1532,9 @@ def write_frame_snapshot(f_index, t):
 	#write annotated file
 	if args.xtcfilename=="no":
 		if args.m_algorithm=='connectivity':
-			all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/1_sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes', format="PDB")
+			all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes', format="PDB")
 		else:
-			all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/1_sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes', format="PDB")
+			all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes', format="PDB")
 	else:
 		if args.m_algorithm=='connectivity':
 			tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/3_snapshots/sizes/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_' + str(int(t)).zfill(5) + 'ns.pdb'
@@ -1542,9 +1555,9 @@ def write_frame_snapshot(f_index, t):
 		#write annotated file
 		if args.xtcfilename=="no":
 			if args.m_algorithm=='connectivity':
-				all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/2_groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups', format="PDB")
+				all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups', format="PDB")
 			else:
-				all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/2_groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups', format="PDB")
+				all_atoms.write(os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups', format="PDB")
 		else:
 			if args.m_algorithm=='connectivity':
 				tmp_name=os.getcwd() + "/" + str(args.output_folder) + '/3_snapshots/groups/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_' + str(int(t)).zfill(5) + 'ns.pdb'
@@ -1561,9 +1574,9 @@ def write_frame_annotation(f_index,t):
 	#create file
 	if args.xtcfilename=="no":
 		if args.m_algorithm=='connectivity':
-			filename_details=os.getcwd() + '/' + str(args.output_folder) + '/1_sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_.txt'
+			filename_details=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_.txt'
 		else:
-			filename_details=os.getcwd() + '/' + str(args.output_folder) + '/1_sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes.txt'
+			filename_details=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes.txt'
 	else:
 		if args.m_algorithm=='connectivity':
 			filename_details=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_' + str(int(t)).zfill(5) + 'ns.txt'
@@ -1597,9 +1610,9 @@ def write_frame_annotation(f_index,t):
 	if args.cluster_groups_file!="no":
 		if args.xtcfilename=="no":
 			if args.m_algorithm=='connectivity':
-				filename_details=os.getcwd() + '/' + str(args.output_folder) + '/2_groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_.txt'
+				filename_details=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_.txt'
 			else:
-				filename_details=os.getcwd() + '/' + str(args.output_folder) + '/2_groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups.txt'
+				filename_details=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups.txt'
 		else:
 			if args.m_algorithm=='connectivity':
 				filename_details=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_' + str(int(t)).zfill(5) + 'ns.txt'
@@ -1900,9 +1913,10 @@ print "\nWriting outputs..."
 #case: gro file
 if args.xtcfilename=="no":
 	print " -writing statistics..."
-	write_frame_stat(0,0)
+	write_frame_stat("all","all")
 	print " -writing annotated pdb..."
 	write_frame_snapshot(0,0)
+	write_frame_annotation(0,0)
 
 #case: xtc file
 else:
