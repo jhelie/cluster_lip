@@ -228,8 +228,8 @@ if args.xtcfilename=="no":
 	elif '-e' in sys.argv:
 		print "Error: -e option specified but no xtc file specified."
 		sys.exit(1)
-	elif '-n' in sys.argv:
-		print "Error: -n option specified but no xtc file specified."
+	elif '--smooth' in sys.argv:
+		print "Error: --smooth option specified but no xtc file specified."
 		sys.exit(1)
 elif not os.path.isfile(args.xtcfilename):
 	print "Error: file " + str(args.xtcfilename) + " not found."
