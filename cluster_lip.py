@@ -228,6 +228,9 @@ if args.xtcfilename=="no":
 	elif '-e' in sys.argv:
 		print "Error: -e option specified but no xtc file specified."
 		sys.exit(1)
+	elif '-w' in sys.argv:
+		print "Error: -w option specified but no xtc file specified."
+		sys.exit(1)
 	elif '--smooth' in sys.argv:
 		print "Error: --smooth option specified but no xtc file specified."
 		sys.exit(1)
@@ -530,7 +533,6 @@ for l in ["lower","upper"]:
 		membrane_comp[l]+=" " + s + " (" + str(lipids_ratio[l][s]) + "%)"
 print membrane_comp["upper"]
 print membrane_comp["lower"]
-
 
 ################################################################################################################################################
 # FUNCTIONS: algorithm
@@ -1294,8 +1296,10 @@ def graph_xvg_groups_smoothed():
 
 #annotations
 #===========
-def write_frame_stat(f_index, t):
+def write_frame_stat(f_nb, f_index, t):
 	
+	#case: gro file or xtc summary
+	#=============================
 	if f_index=="all" and t=="all":
 		#sizes
 		#-----
@@ -1315,22 +1319,25 @@ def write_frame_stat(f_index, t):
 		#general info
 		output_stat.write("[lipid clustering statistics - written by cluster_lip v" + str(version_nb) + "]\n")
 		output_stat.write("\n")
-		output_stat.write("1. Membrane composition:\n")
+		output_stat.write("1. membrane composition:\n")
 		output_stat.write(membrane_comp["upper"] + "\n")
 		output_stat.write(membrane_comp["lower"] + "\n")
 		tmp_string=str(lipids_handled["both"][0])
 		for s in lipids_handled["both"][1:]:
 			tmp_string+=", " + str(s)
 		output_stat.write("\n")
-		output_stat.write("2. Lipid species processed: " + str(tmp_string) + "\n")
+		output_stat.write("2. lipid species processed: " + str(tmp_string) + "\n")
 		output_stat.write("\n")
-		output_stat.write("3. Cluster detection Method:\n")
+		output_stat.write("3. cluster detection Method:\n")
 		if args.m_algorithm=='connectivity':
 			output_stat.write(" - connectivity based\n")
 			output_stat.write(" - contact cutoff = " + str(args.cutoff_connect) + " Angstrom\n")
 		else:
 			output_stat.write(" - density based (DBSCAN)\n")
 			output_stat.write(" - search radius = " + str(args.dbscan_dist) + " Angstrom, nb of neighbours = " + str(args.dbscan_nb) + "\n")
+		if args.xtcfilename!="no":
+			output_stat.write("\n")
+			output_stat.write("4. nb frames processed:	" + str(nb_frames_processed) + " (" + str(nb_frames_xtc) + " frames in xtc, step=" + str(args.frames_dt) + ")\n")
 		
 		#what's in this file
 		output_stat.write("\n")
@@ -1407,42 +1414,40 @@ def write_frame_stat(f_index, t):
 					output_stat.write(str(s) + "	" + str(numpy.min(lipids_groups_sampled[l][s])) + "	" + str(numpy.max(lipids_groups_sampled[l][s])) + "\n")
 				output_stat.write("\n")
 			output_stat.close()		
-	
+
+	#case: xtc snapshot
+	#==================
 	else:
 		#sizes
 		#-----
 		#create file
-		if args.xtcfilename=="no":
-			if args.m_algorithm=='connectivity':
-				tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/1_sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_.stat'
-			else:
-				tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/1_sizes/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes.stat'
+		if args.m_algorithm=='connectivity':
+			tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_' + str(int(t)).zfill(5) + 'ns.stat'
 		else:
-			if args.m_algorithm=='connectivity':
-				tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_sizes_' + str(int(t)).zfill(5) + 'ns.stat'
-			else:
-				tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes_' + str(int(t)).zfill(5) + 'ns.stat'
+			tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/sizes/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_sizes_' + str(int(t)).zfill(5) + 'ns.stat'
 		output_stat = open(tmp_name, 'w')
 		
 		#general info
 		output_stat.write("[lipid clustering statistics - written by cluster_lip v" + str(version_nb) + "]\n")
 		output_stat.write("\n")
-		output_stat.write("1. Membrane composition:\n")
+		output_stat.write("1. membrane composition:\n")
 		output_stat.write(membrane_comp["upper"] + "\n")
 		output_stat.write(membrane_comp["lower"] + "\n")
 		tmp_string=str(lipids_handled["both"][0])
 		for s in lipids_handled["both"][1:]:
 			tmp_string+=", " + str(s)
 		output_stat.write("\n")
-		output_stat.write("2. Lipid species processed: " + str(tmp_string) + "\n")
+		output_stat.write("2. lipid species processed: " + str(tmp_string) + "\n")
 		output_stat.write("\n")
-		output_stat.write("3. Cluster detection Method:\n")
+		output_stat.write("3. cluster detection Method:\n")
 		if args.m_algorithm=='connectivity':
 			output_stat.write(" - connectivity based\n")
 			output_stat.write(" - contact cutoff = " + str(args.cutoff_connect) + " Angstrom\n")
 		else:
 			output_stat.write(" - density based (DBSCAN)\n")
 			output_stat.write(" - search radius = " + str(args.dbscan_dist) + " Angstrom, nb of neighbours = " + str(args.dbscan_nb) + "\n")
+		output_stat.write("\n")
+		output_stat.write("4. time: " + str(t) + "ns (frame " + str(f_nb) + "/" + str(nb_frames_xtc) + ")\n")
 		
 		#what's in this file
 		output_stat.write("\n")
@@ -1464,16 +1469,10 @@ def write_frame_stat(f_index, t):
 		#------
 		if args.cluster_groups_file!="no":
 			#create file
-			if args.xtcfilename=="no":
-				if args.m_algorithm=='connectivity':
-					tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/2_groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_.stat'
-				else:
-					tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/2_groups/' + args.grofilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups.stat'
+			if args.m_algorithm=='connectivity':
+				tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_' + str(int(t)).zfill(5) + 'ns.stat'
 			else:
-				if args.m_algorithm=='connectivity':
-					tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_c' + str(int(args.cutoff_connect)) + '_groups_' + str(int(t)).zfill(5) + 'ns.stat'
-				else:
-					tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups_' + str(int(t)).zfill(5) + 'ns.txt'
+				tmp_name=os.getcwd() + '/' + str(args.output_folder) + '/3_snapshots/groups/' + args.xtcfilename[:-4] + '_annotated_clusterlip_' + str(args.m_algorithm) + '_r' + str(int(args.dbscan_dist)) + '_n' + str(args.dbscan_nb) + '_groups_' + str(int(t)).zfill(5) + 'ns.txt'
 			output_stat = open(tmp_name, 'w')
 
 			#general info
@@ -1495,6 +1494,8 @@ def write_frame_stat(f_index, t):
 			else:
 				output_stat.write(" - density based (DBSCAN)\n")
 				output_stat.write(" - search radius = " + str(args.dbscan_dist) + " Angstrom, nb of neighbours = " + str(args.dbscan_nb) + "\n")
+			output_stat.write("\n")
+			output_stat.write("4. Time: " + str(t) + "ns (frame " + str(f_nb) + "/" + str(nb_frames_xtc) + ")\n")
 			
 			#what's in this file
 			output_stat.write("\n")
@@ -1626,8 +1627,7 @@ def write_frame_annotation(f_index,t):
 			for s in lipids_handled[l]:
 				for r_index in range(0,lipids_sele_nb[l][s]):
 					tmp_sele_string+="." + lipids_selection_VMD_string[l][s][r_index]
-		tmp_sele_string=tmp_sele_string[1:]
-		output_stat.write(tmp_sele_string + "\n")
+		output_stat.write(tmp_sele_string[1:] + "\n")
 	
 		#write min and max boundaries of thickness
 		output_stat.write(str(numpy.min(lipids_groups_sampled[l][s])) + "." + str(numpy.max(lipids_groups_sampled[l][s])) + "\n")
@@ -1665,7 +1665,7 @@ def write_xtc_snapshots():
 			sys.stdout.write(progress)
 			if ((ts.frame-1) % args.frames_dt)==0:
 				if ((loc_nb_frames_processed) % args.frames_write_dt)==0 or loc_nb_frames_processed==nb_frames_processed-1:
-					write_frame_stat(loc_nb_frames_processed, ts.time/float(1000))
+					write_frame_stat(ts.frame, loc_nb_frames_processed, ts.time/float(1000))
 					write_frame_snapshot(loc_nb_frames_processed, ts.time/float(1000))
 					write_frame_annotation(loc_nb_frames_processed, ts.time/float(1000))
 				loc_nb_frames_processed+=1
@@ -1815,6 +1815,8 @@ if args.nb_smoothing>1:
 # ALGORITHM : Browse trajectory and process relevant frames
 ################################################################################################################################################
 
+print "\nDetecting lipid clusters..."
+
 #case: gro file
 #==============
 if args.xtcfilename=="no":
@@ -1823,7 +1825,7 @@ if args.xtcfilename=="no":
 	
 	#browse each specie in each leaflet
 	for l in ["lower","upper"]:
-		print "\nProcessing " + str(l) + " leaflet"
+		print " -" + str(l) + " leaflet..."
 		for s in lipids_handled[l]:
 			#detect clusters
 			if args.m_algorithm=='connectivity':
@@ -1845,7 +1847,6 @@ if args.xtcfilename=="no":
 #case: xtc file
 #==============
 else:
-	print "\nBrowsing trajectory..."
 	for ts in U.trajectory:
 
 		#case: frames before specified time boundaries
@@ -1913,7 +1914,7 @@ print "\nWriting outputs..."
 #case: gro file
 if args.xtcfilename=="no":
 	print " -writing statistics..."
-	write_frame_stat("all","all")
+	write_frame_stat(1, "all","all")
 	print " -writing annotated pdb..."
 	write_frame_snapshot(0,0)
 	write_frame_annotation(0,0)
@@ -1923,7 +1924,7 @@ else:
 	if len(lipids_sizes_sampled["both"]["all"])>1:
 		#writing statistics
 		print " -writing statistics..."
-		write_frame_stat("all", "all")
+		write_frame_stat(0, "all", "all")
 		#output cluster snapshots
 		write_xtc_snapshots()
 		#write annotation files for VMD
