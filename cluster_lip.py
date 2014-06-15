@@ -108,7 +108,7 @@ The following python modules are needed:
       coloured in grey (#C0C0C0).
 	
 6. If you don't want to use a custom colour map, standard matplotlib colormaps can be specified.
-   Type cluster_lip --color_maps to see a list of their names.
+   Type cluster_lip --colour_maps to see a list of their names.
 
 7. The size (or size group) of the cluster each lipid is detected to be involved can be visualised
    with VMD. This can be done either with pdb files (output frequency controled via -w flag) or with 
