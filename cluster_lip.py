@@ -159,7 +159,7 @@ parser.add_argument('-b', nargs=1, dest='t_start', default=[-1], type=int, help=
 parser.add_argument('-e', nargs=1, dest='t_end', default=[10000000000000], type=int, help=argparse.SUPPRESS)
 parser.add_argument('-t', nargs=1, dest='frames_dt', default=[10], type=int, help=argparse.SUPPRESS)
 parser.add_argument('-w', nargs=1, dest='frames_write_dt', default=[1000000000000000], type=int, help=argparse.SUPPRESS)
-parser.add_argument('--forcefield', dest='forcefield_opt', choices=['martini','gromos','charmm'], default='martini', help=argparse.SUPPRESS)
+parser.add_argument('--forcefield', dest='forcefield_opt', choices=['martini'], default='martini', help=argparse.SUPPRESS)
 parser.add_argument('--algorithm', dest='m_algorithm', choices=['connectivity','density'], default='density', help=argparse.SUPPRESS)
 parser.add_argument('--smooth', nargs=1, dest='nb_smoothing', default=[0], type=int, help=argparse.SUPPRESS)
 parser.add_argument('--no-opt', dest='cutoff_leaflet', action='store_false', help=argparse.SUPPRESS)
