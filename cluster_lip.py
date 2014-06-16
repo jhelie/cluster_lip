@@ -47,7 +47,7 @@ MDAnalysis.core.flags['use_KDTree_routines'] = False
 
 #create parser
 #=============
-version_nb="3.3.0"
+version_nb="0.1.0"
 parser = argparse.ArgumentParser(prog='cluster_lip', usage='', add_help=False, formatter_class=argparse.RawDescriptionHelpFormatter, description=\
 '''
 **********************************************
@@ -81,7 +81,7 @@ The following python modules are needed:
 2. Two clustering algorithms can be used:
    -connectivity: based on networkX, a lipid is considered in a cluster if its within a distance
                   less than --cutoff from another lipid. This means that a single lipid can potentially
-                  act as a connectory between two otherwise disconnected lipid patches..
+                  act as a connectory between two otherwise disconnected lipid patches.
    -density: based on the DBSCAN algorithm implemented in scikit, a lipid is considered in a cluster
              if is surrounded by at least --neighbours other lipids within a radius of --radius.
              This density based approach is usually more suited to the detection of 'patches'. For 
