@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/4607/jhelie/cluster_lip.png)](http://dx.doi.org/10.5281/zenodo.10503)
+Please cite: [![DOI](https://zenodo.org/badge/4607/jhelie/cluster_lip.png)](http://dx.doi.org/10.5281/zenodo.10503)
 
 cluster_lip
 ===========
