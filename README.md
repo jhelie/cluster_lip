@@ -24,4 +24,3 @@ Features
 -2D summary of clustering behaviour
 -text output parsable by VMD for visualisation
 
-
